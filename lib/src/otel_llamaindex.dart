@@ -1,15 +1,16 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_llamaindex_suppression.dart';
 
 const _tracerName = 'dartastic_otel_libs_llamaindex';
 
-Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);
+APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 class LlamaIndexResult {
+  /// Creates a result.
   const LlamaIndexResult({
     this.stage,
     this.indexKind,
@@ -93,8 +94,13 @@ class LlamaIndexResult {
   final String? errorMessage;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class LlamaIndexCallResult<T> {
+  /// Creates a call result.
   const LlamaIndexCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final LlamaIndexResult? result;
 }
@@ -124,7 +130,7 @@ Future<T> tracedLlamaIndex<T>({
   final span = _tracer().startSpan(
     'llamaindex $operation',
     kind: SpanKind.client,
-    attributes: OTel.attributesFromMap(m),
+    attributes: OTelAPI.attributesFromMap(m),
   );
   try {
     final r = await invoke();
@@ -132,130 +138,130 @@ Future<T> tracedLlamaIndex<T>({
       final res = r.result!;
       final extras = <Attribute<Object>>[];
       if (res.stage != null) {
-        extras.add(OTel.attributeString('llamaindex.stage', res.stage!));
+        extras.add(OTelAPI.attributeString('llamaindex.stage', res.stage!));
       }
       if (res.indexKind != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'llamaindex.index.kind',
           res.indexKind!,
         ));
       }
       if (res.indexId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'llamaindex.index.id',
           res.indexId!,
         ));
       }
       if (res.docCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'llamaindex.ingestion.doc_count',
           res.docCount!,
         ));
       }
       if (res.chunkCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'llamaindex.ingestion.chunk_count',
           res.chunkCount!,
         ));
       }
       if (res.tokensIngested != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'llamaindex.ingestion.tokens',
           res.tokensIngested!,
         ));
       }
       if (res.embeddingModel != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'llamaindex.embedding.model',
           res.embeddingModel!,
         ));
       }
       if (res.llmProvider != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'llamaindex.llm.provider',
           res.llmProvider!,
         ));
       }
       if (res.llmModel != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'llamaindex.llm.model',
           res.llmModel!,
         ));
       }
       if (res.retrieverKind != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'llamaindex.retriever.kind',
           res.retrieverKind!,
         ));
       }
       if (res.similarityTopK != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'llamaindex.retriever.top_k',
           res.similarityTopK!,
         ));
       }
       if (res.nodeCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'llamaindex.retriever.node_count',
           res.nodeCount!,
         ));
       }
       if (res.minSimilarityScore != null) {
-        extras.add(OTel.attributeDouble(
+        extras.add(OTelAPI.attributeDouble(
           'llamaindex.retriever.min_similarity',
           res.minSimilarityScore!,
         ));
       }
       if (res.maxSimilarityScore != null) {
-        extras.add(OTel.attributeDouble(
+        extras.add(OTelAPI.attributeDouble(
           'llamaindex.retriever.max_similarity',
           res.maxSimilarityScore!,
         ));
       }
       if (res.synthesisMode != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'llamaindex.synthesis.mode',
           res.synthesisMode!,
         ));
       }
       if (res.promptTokens != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'llamaindex.usage.prompt_tokens',
           res.promptTokens!,
         ));
       }
       if (res.completionTokens != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'llamaindex.usage.completion_tokens',
           res.completionTokens!,
         ));
       }
       if (res.totalTokens != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'llamaindex.usage.total_tokens',
           res.totalTokens!,
         ));
       }
       if (res.agentSteps != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'llamaindex.agent.steps',
           res.agentSteps!,
         ));
       }
       if (res.toolCalls != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'llamaindex.agent.tool_calls',
           res.toolCalls!,
         ));
       }
       if (res.workflowName != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'llamaindex.workflow.name',
           res.workflowName!,
         ));
       }
       if (res.workflowEvent != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'llamaindex.workflow.event',
           res.workflowEvent!,
         ));
@@ -264,25 +270,25 @@ Future<T> tracedLlamaIndex<T>({
         }
       }
       if (res.errorKind != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'llamaindex.error.kind',
           res.errorKind!,
         ));
         span.setStatus(SpanStatusCode.Error, 'LlamaIndex ${res.errorKind}');
       }
       if (res.errorMessage != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'llamaindex.error.message',
           res.errorMessage!,
         ));
       }
-      if (extras.isNotEmpty) span.addAttributes(OTel.attributes(extras));
+      if (extras.isNotEmpty) span.addAttributes(OTelAPI.attributes(extras));
     }
     return r.value;
   } catch (e, st) {
-    span.addAttributes(OTel.attributes([
-      OTel.attributeString(
-        ErrorResource.errorType.key,
+    span.addAttributes(OTelAPI.attributes([
+      OTelAPI.attributeString(
+        ErrorAttributes.errorType.key,
         e.runtimeType.toString(),
       ),
     ]));
